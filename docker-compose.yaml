@@ -1,0 +1,40 @@
+services:
+  angular-app:
+    build:
+      context: ./client  # Path to Angular app directory
+    ports:
+      - "4200:4200"
+    networks:
+      - app-network
+    depends_on:
+      - fastapi-app
+
+  fastapi-app:
+    build:
+      context: ./server
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/todo_db
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    networks:
+      - app-network
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
