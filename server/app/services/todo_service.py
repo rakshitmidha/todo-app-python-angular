@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from bson import ObjectId
 from fastapi import HTTPException
 from app.models.todo import Todo
@@ -6,7 +7,8 @@ from typing import List
 import motor.motor_asyncio
 from app.services.connection_manager import manager
 
-client = motor.motor_asyncio.AsyncIOMotorClient("mongodb://localhost:27017")
+mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/todo_db") 
+client = motor.motor_asyncio.AsyncIOMotorClient(mongo_uri)
 db = client.todo_db
 todos_collection = db.todos
 
