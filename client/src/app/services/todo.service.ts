@@ -1,28 +1,44 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { webSocket } from 'rxjs/webSocket';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoService {
-  private apiUrl = 'http://localhost:8000/api/todos';
+  private socket$;
+  private todosSubject = new BehaviorSubject<any[]>([]);
+  todos$ = this.todosSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor() {
+    this.socket$ = webSocket('ws://localhost:8000/api/ws/todos'); 
+
+    this.socket$.subscribe({
+      next: (message: any) => {
+        if (message.action === 'update') {
+          this.todosSubject.next(message.todos);
+        }
+      },
+      error: (err: any) => console.error(err),
+      complete: () => console.warn('WebSocket Closed')
+    });
+  }
 
   getTodos(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    this.socket$.next({ action: 'get' });
+    return this.todosSubject.asObservable();
   }
 
-  createTodo(todo: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, todo);
+  addTodo(todo: any) {
+    this.socket$.next({ action: 'add', todo });
   }
 
-  updateTodo(id: string, todo: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, todo);
+  updateTodo(id: string, todo: any) {
+    this.socket$.next({ action: 'update', id, todo });
   }
 
-  deleteTodo(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  deleteTodo(id: string) {
+    this.socket$.next({ action: 'delete', id });
   }
 }
+

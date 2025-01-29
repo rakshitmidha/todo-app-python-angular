@@ -1,0 +1,57 @@
+<div class="todo-list">
+    <h2 class="list-title">Task List</h2>
+    <div class="task-search">
+      <input
+        type="text"
+        placeholder="Search tasks"
+        class="search-input"
+        [(ngModel)]="searchText"
+      />
+    </div>
+    <ul class="task-items">
+      <li *ngFor="let todo of filteredTodos()" class="task-item">
+        <div class="task-content">
+          <input
+            type="checkbox"
+            [(ngModel)]="todo.completed"
+            class="task-checkbox"
+            (change)="saveTodo(todo)"
+          />
+          <div class="task-details">
+            <h3 *ngIf="!todo.isEditing" class="task-title">{{ todo.title }}</h3>
+            <input
+              *ngIf="todo.isEditing"
+              [(ngModel)]="todo.title"
+              class="task-title-edit"
+            />
+            <p *ngIf="!todo.isEditing" class="task-desc">
+              {{ todo.description }}
+            </p>
+            <textarea
+              *ngIf="todo.isEditing"
+              [(ngModel)]="todo.description"
+              class="task-desc-edit"
+            ></textarea>
+          </div>
+        </div>
+        <div class="task-actions">
+          <button
+            *ngIf="!todo.isEditing"
+            (click)="editTodo(todo)"
+            class="edit-btn"
+          >
+            ✏️ Edit
+          </button>
+          <button
+            *ngIf="todo.isEditing"
+            (click)="saveTodo(todo)"
+            class="save-btn"
+          >
+            💾 Save
+          </button>
+          <button (click)="deleteTodo(todo.id)" class="delete-btn">🗑️ Delete</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  

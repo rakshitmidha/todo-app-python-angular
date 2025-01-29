@@ -1,10 +1,15 @@
 import { Component } from '@angular/core';
+import { TodoFormComponent } from './components/todo-form/todo-form.component';
+import { TodoListComponent } from './components/todo-list/todo-list.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './components/app.component.html'
-  // styleUrls: ['./app.component.css']
+  standalone: true,
+  imports: [CommonModule, TodoFormComponent, TodoListComponent],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'Todo Application';
+  title = '36Zero Vision';
 }
